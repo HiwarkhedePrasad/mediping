@@ -1,5 +1,5 @@
 // test-indian-languages.js - Test Indian language options in registration
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testIndianLanguages() {
   console.log("🧪 Testing Indian Language Options in Registration...\n");

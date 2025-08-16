@@ -1,5 +1,5 @@
 // test-registration.js - Test script for new user registration functionality
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testUserRegistration() {
   console.log("🧪 Testing New User Registration Functionality...\n");

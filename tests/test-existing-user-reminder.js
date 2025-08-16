@@ -1,5 +1,5 @@
 // test-existing-user-reminder.js - Test enhanced reminder system with existing user
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testExistingUserReminder() {
   console.log("🧪 Testing Enhanced Medicine Reminder with Existing User...\n");

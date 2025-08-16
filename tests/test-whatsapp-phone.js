@@ -1,5 +1,5 @@
 // test-whatsapp-phone.js - Test WhatsApp phone number handling
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testWhatsAppPhoneHandling() {
   console.log("🧪 Testing WhatsApp Phone Number Handling...\n");

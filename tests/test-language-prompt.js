@@ -1,5 +1,5 @@
 // test-language-prompt.js - Test the language prompt
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testLanguagePrompt() {
   console.log("🧪 Testing Language Prompt with Indian Languages...\n");

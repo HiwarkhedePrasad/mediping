@@ -1,5 +1,5 @@
 // test-specific-languages.js - Test specific Indian languages
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testSpecificLanguages() {
   console.log("🧪 Testing Specific Indian Languages...\n");

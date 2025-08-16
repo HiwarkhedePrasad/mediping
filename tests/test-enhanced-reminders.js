@@ -1,5 +1,5 @@
 // test-enhanced-reminders.js - Test the enhanced medicine reminder system
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testEnhancedReminders() {
   console.log("🧪 Testing Enhanced Medicine Reminder System...\n");

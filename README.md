@@ -206,19 +206,52 @@ MediPing/
 │   ├── user.js               # User model
 │   ├── doctor.js             # Doctor model
 │   └── remainder.js          # Medicine reminder model
+├── tests/                    # Test suite
+│   ├── README.md             # Test documentation
+│   ├── setup.js              # Database setup script
+│   ├── test-*.js             # Various test files
+│   ├── verify-*.js           # Verification scripts
+│   ├── update-database.js    # Database migration
+│   └── cleanup-duplicates.js # Database cleanup
 ├── index.js                  # Main server file
 ├── twilioClient.js           # Twilio client configuration
-├── setup.js                  # Database setup script
-├── test-reminder.js          # Test script
 └── package.json
 ```
+
+## Testing
+
+The project includes a comprehensive test suite located in the `tests/` folder. See [tests/README.md](tests/README.md) for detailed testing documentation.
+
+### Quick Test Commands
+
+```bash
+# Setup database
+node tests/setup.js
+
+# Test enhanced reminder system
+node tests/test-enhanced-reminders.js
+
+# Local testing (no Twilio)
+node tests/test-local-reminders.js
+
+# Verify database state
+node tests/verify-enhanced-reminders.js
+```
+
+### Test Categories
+
+- **Core Functionality**: Medicine reminder creation and storage
+- **User Registration**: Registration flow and validation
+- **WhatsApp Integration**: Phone number handling and messaging
+- **Language Support**: Indian language options
+- **Database Operations**: Schema updates and data integrity
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Test thoroughly using the test suite
 5. Submit a pull request
 
 ## License

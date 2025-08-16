@@ -1,5 +1,5 @@
 // test-local-reminders.js - Local testing without Twilio
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testLocalReminders() {
   console.log("🧪 Local Testing - Enhanced Medicine Reminder System\n");

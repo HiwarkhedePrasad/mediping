@@ -1,6 +1,6 @@
 // cleanup-duplicates.js - Clean up duplicate phone number entries
-import sequelize from "./config/db.js";
-import { User } from "./model/index.js";
+import sequelize from "../config/db.js";
+import { User } from "../model/index.js";
 import dotenv from "dotenv";
 
 dotenv.config();

@@ -1,7 +1,7 @@
 // verify-enhanced-reminders.js - Verify enhanced medicine reminders
-import sequelize from "./config/db.js";
-import { User, Doctor } from "./model/index.js";
-import MedicineReminder from "./model/remainder.js";
+import sequelize from "../config/db.js";
+import { User, Doctor } from "../model/index.js";
+import MedicineReminder from "../model/remainder.js";
 import dotenv from "dotenv";
 
 dotenv.config();

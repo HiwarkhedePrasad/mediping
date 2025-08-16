@@ -1,5 +1,5 @@
 // test-complete-flow.js - Test complete flow from registration to medicine reminder
-import { processMessage } from "./functionsCalling/gemini.js";
+import { processMessage } from "../functionsCalling/gemini.js";
 
 async function testCompleteFlow() {
   console.log("🧪 Testing Complete Flow: Registration → Medicine Reminder\n");

@@ -1,6 +1,6 @@
 // setup.js - Database setup and test data initialization
-import sequelize from "./config/db.js";
-import { User, Doctor } from "./model/index.js";
+import sequelize from "../config/db.js";
+import { User, Doctor } from "../model/index.js";
 import dotenv from "dotenv";
 
 dotenv.config();
