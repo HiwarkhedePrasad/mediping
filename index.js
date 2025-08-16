@@ -38,21 +38,24 @@ app.get("/users", async (req, res) => {
 // Add user registration endpoint
 app.post("/register", async (req, res) => {
   try {
-    const { userName, phoneNumber, email, emergencyNumber, age, language } = req.body;
-    
+    const { userName, phoneNumber, email, emergencyNumber, age, language } =
+      req.body;
+
     if (!userName || !phoneNumber || !emergencyNumber) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Name, phone number, and emergency number are required" 
+      return res.status(400).json({
+        success: false,
+        message: "Name, phone number, and emergency number are required",
       });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ where: { PhoneNumber: phoneNumber } });
+    const existingUser = await User.findOne({
+      where: { PhoneNumber: phoneNumber },
+    });
     if (existingUser) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "User with this phone number already exists" 
+      return res.status(400).json({
+        success: false,
+        message: "User with this phone number already exists",
       });
     }
 
@@ -62,19 +65,19 @@ app.post("/register", async (req, res) => {
       Email: email || null,
       EmergencyNumber: emergencyNumber,
       Age: age || null,
-      Language: language || "English"
+      Language: language || "English",
     });
 
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: newUser
+      user: newUser,
     });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error during registration" 
+    res.status(500).json({
+      success: false,
+      message: "Server error during registration",
     });
   }
 });

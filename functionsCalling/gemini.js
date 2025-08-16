@@ -115,11 +115,21 @@ export async function processMessage(userMessage, userId, history = []) {
     );
 
     if (wantsReminder) {
-      return await handleMedicineReminder(
-        cleanPhoneNumber,
-        userMessage,
-        history
-      );
+      // Check if user is already in reminder flow
+      if (medicineReminderState.has(cleanPhoneNumber)) {
+        return await handleMedicineReminder(
+          cleanPhoneNumber,
+          userMessage,
+          history
+        );
+      } else {
+        // Start new reminder flow
+        return await handleMedicineReminder(
+          cleanPhoneNumber,
+          "start_reminder",
+          history
+        );
+      }
     }
 
     // First, try to extract medicine name and time from the user message
@@ -388,6 +398,12 @@ async function handleMedicineReminder(userId, userMessage, history) {
   // Handle reminder steps
   switch (reminderState.step) {
     case "medicine_name":
+      // Check if this is a start_reminder trigger
+      if (userMessage === "start_reminder") {
+        return {
+          text: `Great! Let's set up a medicine reminder. What's the name of the medicine you want to be reminded about?`,
+        };
+      }
       reminderState.data.medicineName = userMessage.trim();
       reminderState.step = "reminder_type";
       return {
