@@ -99,6 +99,8 @@ async function demoReminderSystem() {
   } catch (error) {
     console.error("❌ Demo failed:", error);
   } finally {
+    // Stop the scheduler before closing the database
+    reminderScheduler.stop();
     await sequelize.close();
   }
 }
