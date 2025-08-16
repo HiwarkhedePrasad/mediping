@@ -2,6 +2,8 @@ import express from "express";
 import { User, Doctor } from "./model/index.js";
 import client from "./twilioClient.js";
 import { processMessage } from "./functionsCalling/gemini.js";
+import reminderScheduler from "./services/reminderScheduler.js";
+import responseTracker from "./services/responseTracker.js";
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -33,6 +35,25 @@ function addToMemory(userId, role, content) {
 app.get("/users", async (req, res) => {
   const users = await User.findAll({ include: Doctor });
   res.json(users);
+});
+
+// Get reminder tracking status
+app.get("/reminder-status", (req, res) => {
+  const status = reminderScheduler.getTrackingStatus();
+  res.json(status);
+});
+
+// Get all active reminders
+app.get("/active-reminders", (req, res) => {
+  const activeReminders = responseTracker.getAllActive();
+  res.json(activeReminders);
+});
+
+// Get reminders for a specific user
+app.get("/user-reminders/:phoneNumber", (req, res) => {
+  const { phoneNumber } = req.params;
+  const userReminders = responseTracker.getUserReminders(phoneNumber);
+  res.json(userReminders);
 });
 
 // Add user registration endpoint
@@ -88,6 +109,18 @@ app.post("/whatsapp-web", async (req, res) => {
   const from = req.body.From;
   const body = req.body.Body;
 
+  console.log(`📱 WhatsApp message received from ${from}: "${body}"`);
+
+  // Check if this is a response to a reminder
+  const reminderResponse = await handleReminderResponse(from, body);
+
+  if (reminderResponse) {
+    // This was a reminder response, send confirmation
+    res.send("<Response></Response>");
+    return;
+  }
+
+  // Normal message processing
   if (!userHistories[from]) userHistories[from] = [];
 
   const reply = await processMessage(body, from, userHistories[from]);
@@ -108,5 +141,44 @@ app.post("/whatsapp-web", async (req, res) => {
 
   res.send("<Response></Response>");
 });
+
+// Handle reminder responses
+async function handleReminderResponse(from, body) {
+  const response = body.trim().toLowerCase();
+
+  // Check if this looks like a reminder response
+  if (["taken", "remind later", "skip today"].includes(response)) {
+    console.log(`💊 Processing reminder response: ${response}`);
+
+    // Find the active reminder for this user
+    const userPhone = from.replace(/^whatsapp:/, "");
+    const activeReminder = responseTracker.getActiveReminder(userPhone);
+
+    if (activeReminder) {
+      console.log(
+        `📊 Found active reminder ${activeReminder.reminderId} for user ${userPhone}`
+      );
+
+      // Handle the response using the reminder scheduler
+      const success = reminderScheduler.handleUserResponse(
+        activeReminder.reminderId,
+        response,
+        from
+      );
+
+      if (success) {
+        console.log(`✅ Reminder response handled successfully`);
+        return true;
+      }
+    } else {
+      console.log(`⚠️ No active reminder found for user ${userPhone}`);
+    }
+  }
+
+  return false;
+}
+
+// Start the reminder scheduler
+reminderScheduler.start();
 
 app.listen(3000, () => console.log("Server running on port 3000"));

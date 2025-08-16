@@ -6,7 +6,10 @@ A WhatsApp-based healthcare assistant that helps elderly patients manage their m
 
 - 🤖 AI-powered natural language processing for medicine reminders
 - 📱 WhatsApp integration via Twilio
-- 💊 Medicine reminder management
+- ⏰ **Automated scheduled reminders** at set times
+- 🚨 **Emergency contact system** (5-10 minute timeout)
+- 📊 **Response tracking and monitoring**
+- 💊 **5 Reminder types**: Daily, Weekly, Monthly, One-time, Custom range
 - 👥 User and doctor management
 - 🗄️ MySQL database with Sequelize ORM
 
@@ -95,15 +98,40 @@ GET /users
 POST /whatsapp-web
 ```
 
-## Testing the Medicine Reminder Functionality
+### Reminder System Endpoints
 
-### 1. Using the Test Script
-
-```bash
-node test-reminder.js
+```
+GET /reminder-status          # Get system status and statistics
+GET /active-reminders         # Get all active reminders being tracked
+GET /user-reminders/:phone    # Get reminders for specific user
 ```
 
-### 2. Manual Testing via WhatsApp
+## Testing the Medicine Reminder Functionality
+
+### 1. **Comprehensive Reminder System Test**
+
+```bash
+# Test the complete reminder system
+node tests/test-reminder-system.js
+
+# Demo the system
+node demo-reminder-system.js
+```
+
+### 2. **Individual Component Tests**
+
+```bash
+# Test enhanced reminders
+node tests/test-enhanced-reminders.js
+
+# Test local reminders (no Twilio)
+node tests/test-local-reminders.js
+
+# Test user registration
+node tests/test-registration.js
+```
+
+### 3. **Manual Testing via WhatsApp**
 
 1. Send a message to your Twilio WhatsApp number
 2. Try these example messages:
@@ -111,7 +139,7 @@ node test-reminder.js
    - "Set a reminder for my blood pressure medicine at 9:30 PM"
    - "I need to take vitamin D at 7:00 AM daily"
 
-### 3. Testing via API
+### 4. **Testing via API**
 
 You can also test the functionality by sending a POST request to the WhatsApp webhook:
 
@@ -121,7 +149,22 @@ curl -X POST http://localhost:3000/whatsapp-web \
   -d "From=+1234567890&Body=Remind me to take aspirin at 8:00 AM"
 ```
 
+### 5. **Monitoring the System**
+
+```bash
+# Check system status
+curl http://localhost:3000/reminder-status
+
+# View active reminders
+curl http://localhost:3000/active-reminders
+
+# Check user reminders
+curl http://localhost:3000/user-reminders/+1234567890
+```
+
 ## How It Works
+
+### **Setting Reminders**
 
 1. **User sends a message** via WhatsApp
 2. **Gemini AI processes** the natural language request
@@ -129,6 +172,14 @@ curl -X POST http://localhost:3000/whatsapp-web \
 4. **Database lookup** finds the user by phone number
 5. **Reminder is saved** to the database
 6. **Confirmation message** is sent back via WhatsApp
+
+### **Automated Reminder System**
+
+1. **Scheduled Checks**: System checks for due reminders every minute
+2. **WhatsApp Delivery**: Automatic messages sent at scheduled times
+3. **Response Tracking**: Monitor user responses (Taken/Remind Later/Skip)
+4. **Emergency Contact**: If no response within 7 minutes, emergency contact is notified
+5. **Follow-up Actions**: Handle user choices (remind later, skip, etc.)
 
 ## Database Schema
 
