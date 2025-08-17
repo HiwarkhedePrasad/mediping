@@ -108,8 +108,52 @@ let userHistories = {}; // key: userId
 app.post("/whatsapp-web", async (req, res) => {
   const from = req.body.From;
   const body = req.body.Body;
+  const mediaUrl = req.body.MediaUrl0; // Twilio sends media URLs in MediaUrl0, MediaUrl1, etc.
+  const messageType = req.body.MediaContentType0; // Check if it's an image
 
   console.log(`📱 WhatsApp message received from ${from}: "${body}"`);
+
+  // Check if this is a media message (photo)
+  if (mediaUrl && messageType && messageType.startsWith("image/")) {
+    console.log(`📸 Photo received from ${from}: ${mediaUrl}`);
+
+    try {
+      // Process the photo for medicine recognition
+      const photoResponse = await processMedicinePhoto(mediaUrl, from);
+
+      // Send the response back to the user
+      if (process.env.NODE_ENV === "development") {
+        console.log("Twilio mock send (photo response):", photoResponse);
+      } else {
+        await client.messages.create({
+          from: process.env.TWILIO_WHATSAPP_NUMBER,
+          to: from,
+          body: photoResponse,
+        });
+      }
+
+      res.send("<Response></Response>");
+      return;
+    } catch (error) {
+      console.error("❌ Error processing photo:", error);
+
+      // Send error message to user
+      const errorMessage =
+        "Sorry, I couldn't process the photo. Please try again or send a text message.";
+      if (process.env.NODE_ENV === "development") {
+        console.log("Twilio mock send (error):", errorMessage);
+      } else {
+        await client.messages.create({
+          from: process.env.TWILIO_WHATSAPP_NUMBER,
+          to: from,
+          body: errorMessage,
+        });
+      }
+
+      res.send("<Response></Response>");
+      return;
+    }
+  }
 
   // Check if this is a response to a reminder
   const reminderResponse = await handleReminderResponse(from, body);
@@ -176,6 +220,70 @@ async function handleReminderResponse(from, body) {
   }
 
   return false;
+}
+
+// Process medicine photos using Gemini Vision
+async function processMedicinePhoto(mediaUrl, from) {
+  try {
+    console.log(`🔍 Processing medicine photo from ${mediaUrl}`);
+
+    // Import the medicine photo processor
+    const { processMedicinePhotoWithGemini } = await import(
+      "./functionsCalling/medicinePhotoProcessor.js"
+    );
+
+    // Process the photo and get medicine information
+    const medicineInfo = await processMedicinePhotoWithGemini(mediaUrl);
+
+    // Format the response with medicine information and link
+    const response = formatMedicineResponse(medicineInfo);
+
+    console.log(
+      `✅ Photo processed successfully: ${medicineInfo.medicineName}`
+    );
+    return response;
+  } catch (error) {
+    console.error("❌ Error in processMedicinePhoto:", error);
+    throw error;
+  }
+}
+
+// Format medicine response with information and link
+function formatMedicineResponse(medicineInfo) {
+  const {
+    medicineName,
+    description,
+    dosage,
+    sideEffects,
+    precautions,
+    buyLink,
+  } = medicineInfo;
+
+  let response = `💊 **Medicine Information: ${medicineName}**\n\n`;
+
+  if (description) {
+    response += `📝 **Description:** ${description}\n\n`;
+  }
+
+  if (dosage) {
+    response += `💊 **Dosage:** ${dosage}\n\n`;
+  }
+
+  if (sideEffects) {
+    response += `⚠️ **Side Effects:** ${sideEffects}\n\n`;
+  }
+
+  if (precautions) {
+    response += `🔒 **Precautions:** ${precautions}\n\n`;
+  }
+
+  if (buyLink) {
+    response += `🛒 **Buy Online:** ${buyLink}\n\n`;
+  }
+
+  response += `ℹ️ *This information is for educational purposes only. Please consult your doctor before taking any medication.*`;
+
+  return response;
 }
 
 // Start the reminder scheduler
